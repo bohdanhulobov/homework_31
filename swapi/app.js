@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch(`https://swapi.dev/api/${entityType}/?page=${page}`)
       .then((response) => response.json())
       .then((data) =>
-        displayList(data.results, entityType, data.next, data.previous)
+        displayList(data.results, entityType, data.next, data.previous),
       )
       .catch((error) => console.error("Error fetching entities:", error));
   };
@@ -21,15 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
     content.innerHTML = `<ul class="list-group">${entities
       .map(
         (entity, index) =>
-          `<li class="list-group-item" data-index="${index}" data-type="${entityType}">${entity.name}</li>`
+          `<li class="list-group-item" data-index="${index}" data-type="${entityType}">${entity.name}</li>`,
       )
       .join("")}</ul>`;
-
-    document.querySelectorAll(".list-group-item").forEach((item) => {
-      item.addEventListener("click", () =>
-        loadDetails(item.dataset.type, item.dataset.index)
-      );
-    });
 
     content.innerHTML += `
       <nav aria-label="Page navigation">
@@ -52,14 +46,14 @@ document.addEventListener("DOMContentLoaded", () => {
       document
         .getElementById("next-page")
         .addEventListener("click", () =>
-          loadEntities(entityType, getPageNumber(nextPage))
+          loadEntities(entityType, getPageNumber(nextPage)),
         );
     }
     if (prevPage) {
       document
         .getElementById("prev-page")
         .addEventListener("click", () =>
-          loadEntities(entityType, getPageNumber(prevPage))
+          loadEntities(entityType, getPageNumber(prevPage)),
         );
     }
   };
@@ -68,6 +62,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const urlParams = new URLSearchParams(url.split("?")[1]);
     return urlParams.get("page");
   };
+
+  content.addEventListener("click", (event) => {
+    if (event.target.classList.contains("list-group-item")) {
+      loadDetails(event.target.dataset.type, event.target.dataset.index);
+    }
+  });
 
   const loadDetails = (entityType, index) => {
     fetch(`https://swapi.dev/api/${entityType}/`)
